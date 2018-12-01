@@ -1,4 +1,4 @@
-# WASM AES Toy
+# WASM Go Canvas
 A wasm golang demo and toy.
 
 ## Running the demo
