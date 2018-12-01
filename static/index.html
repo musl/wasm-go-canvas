@@ -24,23 +24,14 @@
 			(async function() {
 				const { instance } = await WebAssembly.instantiateStreaming(fetch(wasm), go.importObject);
 				run = go.run(instance);
-
-				// draw the first frame.
-				draw('canvas', 1);
 			})();
 		</script>
 	</head>
 	<body>
 		<div class="pure-g">
 			<div class="pure-u-1-4"></div>
-			<h1 class="pure-u-1-2 head">Go Canvas</h1>
-			<div class="pure-u-1-4"></div>
-		</div>
-		<div class="pure-g">
-			<div class="pure-u-1-4"></div>
 			<div class="pure-u-1-2 main_column">
-				<svg id="canvas" width="500" height="500"></svg>
-				<button class="pure-button draw-button" onClick="draw('canvas', 480)">go</button>
+				<svg id="canvas" width="700" height="700"></svg>
 			</div>
 			<div class="pure-u-1-4"></div>
 		</div>

@@ -1,20 +1,10 @@
 html, body {
-	font-family: sans-serif;
-}
-
-h1.head {
-	text-align: center;
-	padding-bottom: 0.25em;
-	border-bottom: 1px #ddd solid;
+	background: #f0f0f0	
 }
 
 svg#canvas {
 	display: block;
 	border: 1px #ddd solid;
-	margin: 0 auto;
-}
-
-button.draw-button {
-	display: block !important;
-	margin: 1em auto !important;
+	margin: 10em auto;
+	background-color: #ffffff;
 }
