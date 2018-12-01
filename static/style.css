@@ -1,0 +1,15 @@
+html, body {
+	font-family: sans-serif;
+}
+
+h1.head {
+	text-align: center;
+	padding-bottom: 0.25em;
+	border-bottom: 1px #ddd solid;
+}
+
+svg#canvas {
+	display: block;
+	border: 1px #ddd solid;
+	margin: 0 auto;
+}
