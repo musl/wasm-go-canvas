@@ -13,3 +13,8 @@ svg#canvas {
 	border: 1px #ddd solid;
 	margin: 0 auto;
 }
+
+button.draw-button {
+	display: block !important;
+	margin: 1em auto !important;
+}

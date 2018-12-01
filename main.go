@@ -2,26 +2,18 @@ package main
 
 import (
 	"log"
-	"syscall/js"
-)
-
-const (
-
-package main
-
-import (
-	"fmt"
-	"log"
+	"math"
 	"os"
+	"strings"
+	"syscall/js"
 	"time"
 
-	"github.com/musl/wandr/lib/term"
-	"github.com/nsf/termbox-go"
+	"github.com/alecthomas/template"
 )
 
 const (
-	// AppName is a short name for this application.
-	AppName = `wandr`
+	// AppName is a short string that identifies this application.
+	AppName = `wasm-go-canvas`
 )
 
 var (
@@ -36,6 +28,48 @@ var (
 	Revision = ``
 )
 
+func draw(args []js.Value) {
+	if len(args) != 2 {
+		log.Printf("draw needs 2 arguments, an id to draw to, and a number of frames.")
+		return
+	}
+
+	doc := js.Global().Get("document")
+	id := args[0].String()
+	frames := args[1].Int()
+	svg := doc.Call("getElementById", id)
+
+	// 1000 / 60 = 16.666...
+	step := math.Pi / 120.0
+	frameDelay := 16666 * time.Nanosecond
+	tmplString := `<circle cx="{{.X}}" cy="{{.Y}}" r="25" stroke="#ddd" stroke-width="1" fill="#def" />`
+	tmplData := struct {
+		X int
+		Y int
+	}{}
+	tmpl, err := template.New("svg").Parse(tmplString)
+	if err != nil {
+		log.Printf("Unable to compile the SVG template: %s", err.Error())
+		return
+	}
+	var tmplWriter strings.Builder
+
+	for i := 0; i < frames; i++ {
+		tmplData.X = int(250 + 200*math.Cos(float64(i)*step))
+		tmplData.Y = int(250 + 200*math.Sin(float64(i)*step))
+
+		err = tmpl.Execute(&tmplWriter, tmplData)
+		if err != nil {
+			log.Printf("Unable to render the SVG template: %s", err.Error())
+			return
+		}
+
+		svg.Set("innerHTML", tmplWriter.String())
+		tmplWriter.Reset()
+
+		time.Sleep(frameDelay)
+	}
+}
 
 func main() {
 	log.SetOutput(os.Stderr)
@@ -44,10 +78,12 @@ func main() {
 
 	log.Printf("%s version: %s revision: %s", AppName, Version, Revision)
 
-
-	dcb := js.NewCallback(handleDecrypt)
-	defer dcb.Release()
-	js.Global().Set("decrypt", dcb)
+	//
+	// Setup Callbacks
+	//
+	cb := js.NewCallback(draw)
+	defer cb.Release()
+	js.Global().Set("draw", cb)
 
 	//
 	// Handle Unload
