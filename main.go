@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"math"
+	"math/rand"
 	"os"
 	"strconv"
 	"strings"
@@ -63,6 +64,7 @@ func setup(c *Context) {
 type Spinner struct {
 	A           float64
 	Fill        string
+	FontSize    string
 	I           float64
 	IMax        float64
 	O           float64
@@ -73,6 +75,7 @@ type Spinner struct {
 	Stroke      string
 	StrokeWidth float64
 	T           float64
+	Text        string
 	X           int
 	Y           int
 }
@@ -86,7 +89,12 @@ func (s *Spinner) Update() {
 }
 
 func (s *Spinner) String() string {
-	tmplString := `<circle cx="{{.X}}" cy="{{.Y}}" r="{{.R}}" opacity="{{.Opacity}}" stroke="{{.Stroke}}" stroke-width="{{.StrokeWidth}}" fill="{{.Fill}}" />`
+	tmplString := `
+	<g>
+	<circle cx="{{.X}}" cy="{{.Y}}" r="{{.R}}" opacity="{{.Opacity}}" stroke="{{.Stroke}}" stroke-width="{{.StrokeWidth}}" fill="{{.Fill}}" />
+	<text x="{{.X}}" y="{{.Y}}" text-anchor="middle" dominant-baseline="central" opacity="{{.Opacity}}" font-size="{{.FontSize}}" dy="0.08em">{{.Text}}</text>
+	</g>
+	`
 	tmpl, err := template.New("svg").Parse(tmplString)
 	if err != nil {
 		log.Printf("Unable to compile the SVG template: %s", err.Error())
@@ -128,22 +136,25 @@ func main() {
 		return
 	}
 
+	rand.Seed(time.Now().UnixNano())
+
 	iMax := 16
 	for i := 0; i < iMax; i++ {
 		c.Elements = append(c.Elements,
 			&Spinner{
 				I:           float64(i),
 				IMax:        float64(iMax),
-				A:           10 + (float64(w)/3)*(float64(i)/float64(iMax)),
+				A:           40 + (float64(w)/3)*(float64(i)/float64(iMax)),
 				O:           (float64(w) / 2.0),
-				R:           16.0 + (float64(w)/32.0)*(float64(i)/float64(iMax)),
+				R:           20.0 + (float64(w)/32.0)*(float64(i)/float64(iMax)),
 				Opacity:     0.5,
 				Step:        math.Pi / 60.0,
 				StrokeWidth: 1.0,
 				Stroke:      colorful.Hsv(360*(float64(i)/float64(iMax)), 1.0, 1.0).Hex(),
 				Fill:        colorful.Hsv(360*(float64(i)/float64(iMax)), 0.2, 1.0).Hex(),
-			},
-		)
+				Text:        string(0x1F600 + rand.Intn(32)),
+				FontSize:    "24pt",
+			})
 	}
 	go loop(c)
 
